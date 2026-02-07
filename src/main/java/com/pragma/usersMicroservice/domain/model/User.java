@@ -1,7 +1,9 @@
 package com.pragma.usersMicroservice.domain.model;
 
 import java.time.LocalDate;
-
+/**
+ * Represents a User within the application's domain model
+ * */
 public class User {
     private String id;
     private String name;
