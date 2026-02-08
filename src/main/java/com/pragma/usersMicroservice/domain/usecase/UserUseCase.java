@@ -79,7 +79,7 @@ public class UserUseCase implements IUserServicePort {
      * @throws UnderAgeException if the user is not of legal age.
      */
 
-    private User saveUser(User user, RoleName roleName){
+    public User saveUser(User user, RoleName roleName){
         // Validations
         validateAge(user);
         validateEmailAlreadyExists(user.getEmail());
@@ -87,6 +87,10 @@ public class UserUseCase implements IUserServicePort {
         //Get role from DB and set to User
         Role role = rolePersistencePort.findByName(roleName);
         user.setRole(role);
+
+        //Password encryption
+        String encryptedPassword = passwordEncryptionPort.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
 
         return userPersistencePort.saveUser(user);
     }
@@ -98,8 +102,6 @@ public class UserUseCase implements IUserServicePort {
      */
     @Override
     public User createOwner(User user) {
-        String encryptedPassword = passwordEncryptionPort.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
         return saveUser(user, RoleName.OWNER);
     }
 
