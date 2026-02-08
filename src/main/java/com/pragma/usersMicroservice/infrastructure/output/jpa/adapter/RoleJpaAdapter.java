@@ -10,6 +10,8 @@ import com.pragma.usersMicroservice.infrastructure.output.jpa.repository.IRoleRe
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * JPA Adapter implementation for Role persistence.
  * <p>
@@ -28,16 +30,11 @@ public class RoleJpaAdapter implements IRolePersistencePort {
      * Retrieves a Role domain object by its name.
      *
      * @param name The {@link RoleName} enum to search for.
-     * @return The mapped {@link Role} domain object from the database.
-     * @throws RoleNotFoundException if the role name was not found in DB.
+     * @return An Optional with the {@link RoleEntity} if exists.
      */
     @Override
-    public Role findByName(RoleName name) {
-        try{
-            RoleEntity roleEntity = roleRepository.findByName(name);
-            return roleEntityMapper.toRole(roleEntity);
-        } catch (Exception e){
-            throw new RoleNotFoundException();
-        }
+    public Optional<Role> findByName(RoleName name) {
+        Optional<RoleEntity> entity = roleRepository.findByName(name);
+        return entity.map(roleEntityMapper::toRole);
     }
 }

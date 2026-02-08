@@ -10,8 +10,11 @@ import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
 import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
+import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 /**
  * Provides the implementation for user-related use cases
@@ -116,8 +119,10 @@ public class UserUseCase implements IUserServicePort {
      * @param user {@link User} to change the role.
      * @param roleName {@link RoleName} String of RoleName Enum.
      */
-    private void getAndSetUserRole(User user, RoleName roleName){
-        Role role = rolePersistencePort.findByName(roleName);
+    private void getAndSetUserRole(User user, RoleName roleName) {
+        Role role = rolePersistencePort.findByName(roleName)
+                .orElseThrow(RoleNotFoundException::new);
+
         user.setRole(role);
     }
 
