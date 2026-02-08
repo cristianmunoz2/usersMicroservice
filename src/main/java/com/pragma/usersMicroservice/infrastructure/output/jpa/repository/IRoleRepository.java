@@ -3,7 +3,6 @@ package com.pragma.usersMicroservice.infrastructure.output.jpa.repository;
 import com.pragma.usersMicroservice.domain.util.RoleName;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
 
 /**
  * Repository interface for accessing Role data in the database.

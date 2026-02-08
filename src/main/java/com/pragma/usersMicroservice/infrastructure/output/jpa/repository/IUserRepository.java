@@ -11,5 +11,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * </p>
  */
 public interface IUserRepository extends JpaRepository<UserEntity, Long> {
+    /**
+     * Validates if an email is already registered in BD.
+     * @param email email to validate
+     * @return True if the email exists. False if not.
+     */
+    boolean existsByEmail(String email);
 
+    /**
+     * Validates if an ID Document is already registered in BD.
+     * @param idDocument Id document number to validate
+     * @return True if the ID Document number exists. False if not.
+     */
+    boolean existsByIdDocument(String idDocument);
 }

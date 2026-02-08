@@ -1,6 +1,8 @@
 package com.pragma.usersMicroservice.domain.usecase;
 
 import com.pragma.usersMicroservice.domain.api.IUserServicePort;
+import com.pragma.usersMicroservice.domain.exception.EmailAlreadyExistsException;
+import com.pragma.usersMicroservice.domain.exception.IdDocAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.UnderAgeException;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.model.User;
@@ -36,9 +38,29 @@ public class UserUseCase implements IUserServicePort {
      * @throws UnderAgeException if the user's age is less than 18.
      */
 
-    private void validateUser(User user){
+    private void validateAge(User user){
         if (user.getBirthDate().until(LocalDate.now(), ChronoUnit.YEARS) < 18L){
             throw new UnderAgeException();
+        }
+    }
+
+    /**
+     * Validates if email is already registered in the DB.
+     * @param email Email to validate
+     */
+    private void validateEmailAlreadyExists(String email){
+        if(userPersistencePort.existsByEmail(email)){
+            throw new EmailAlreadyExistsException();
+        }
+    }
+
+    /**
+     * Validates if Id Document is already registered in the DB.
+     * @param idDocument Id document number to validate
+     */
+    private void validateDocumentAlreadyExists(String idDocument){
+        if(this.userPersistencePort.existsByIdDocument(idDocument)){
+            throw new IdDocAlreadyExistsException();
         }
     }
 
@@ -52,9 +74,14 @@ public class UserUseCase implements IUserServicePort {
      */
 
     private User saveUser(User user, RoleName roleName){
-        validateUser(user);
+        // Validations
+        validateAge(user);
+        validateEmailAlreadyExists(user.getEmail());
+        validateDocumentAlreadyExists(user.getIdDocument());
+        //Get role from DB and set to User
         Role role = rolePersistencePort.findByName(roleName);
         user.setRole(role);
+
         return userPersistencePort.saveUser(user);
     }
 

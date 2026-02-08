@@ -33,4 +33,26 @@ public class UserJpaAdapter implements IUserPersistencePort {
         UserEntity userEntity = userRepository.save(userEntityMapper.toEntity(user));
         return userEntityMapper.toUser(userEntity);
     }
+
+    /**
+     * Validates if an email is already registered in BD
+     * @param email email to validate
+     * @return True if email exists in BD. False if not.
+     */
+    @Override
+    public boolean existsByEmail(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
+
+    /**
+     * Validates if an ID Document is already registered in BD.
+     * @param idDocument Id document number to validate
+     * @return True if the ID Document number exists. False if not.
+     */
+    @Override
+    public boolean existsByIdDocument(String idDocument) {
+        return this.userRepository.existsByIdDocument(idDocument);
+    }
+
+
 }
