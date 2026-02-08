@@ -21,7 +21,7 @@ public interface IUserRegisterRequestMapper {
 
     /**
      * Maps a registration request to the User domain entity.
-     * * @param userRegisterRequest The DTO containing the user registration data.
+     * @param userRegisterRequest The DTO containing the user registration data.
      * @return A {@link User} domain object populated with the request data.
      */
     @Mapping(target = "role", ignore = true)

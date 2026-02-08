@@ -3,11 +3,8 @@ package com.pragma.usersMicroservice.domain.model;
 import com.pragma.usersMicroservice.domain.util.RoleName;
 
 /**
- * Represents a Role in the application's domain model.
- * <p>
- * Implements the Builder pattern manually to maintain a pure domain
- * free of external dependencies.
- * </p>
+ * Represents a user role in the domain model.
+ * Uses a manual Builder pattern to avoid external dependencies.
  */
 public class Role {
     private String id;
@@ -15,8 +12,8 @@ public class Role {
     private String description;
 
     /**
-     * Constructs a Role instance using the provided builder.
-     * @param roleBuilder The builder containing the role data.
+     * Initializes a new Role using the builder data.
+     * @param roleBuilder Source builder.
      */
     public Role(RoleBuilder roleBuilder) {
         this.id = roleBuilder.id;
@@ -49,15 +46,15 @@ public class Role {
     }
 
     /**
-     * Initiates the Builder pattern for the Role entity.
-     * @return A new instance of RoleBuilder.
+     * Creates a new builder instance.
+     * @return A fresh RoleBuilder.
      */
     public static RoleBuilder builder(){
         return new RoleBuilder();
     }
 
     /**
-     * Builder class for constructing Role instances.
+     * Builder to construct {@link Role} instances.
      */
     public static class RoleBuilder{
         private String id;
@@ -80,8 +77,8 @@ public class Role {
         }
 
         /**
-         * Finalizes the construction of the Role object.
-         * @return A new Role instance with the configured attributes.
+         * Builds and returns the Role instance.
+         * @return The created Role.
          */
         public Role build() {
             return new Role(this);

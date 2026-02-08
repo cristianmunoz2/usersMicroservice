@@ -4,7 +4,7 @@ import com.pragma.usersMicroservice.domain.model.User;
 
 /**
  * Represents a User port.
- * This connect model with the application layer through use cases.
+ * This connects model with the application layer through use cases.
  */
 public interface IUserServicePort {
     /**

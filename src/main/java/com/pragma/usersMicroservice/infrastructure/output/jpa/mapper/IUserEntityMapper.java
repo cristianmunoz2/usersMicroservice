@@ -21,7 +21,7 @@ public interface IUserEntityMapper {
      * Explicitly maps the Role object's ID from the domain to the roleId field
      * in the database entity.
      * </p>
-     * * @param user The domain object to convert.
+     * @param user The domain object to convert.
      * @return The entity ready to be saved in the database.
      */
     @Mapping(target = "roleId", source = "role.id")
