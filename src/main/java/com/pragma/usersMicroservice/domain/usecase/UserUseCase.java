@@ -85,13 +85,9 @@ public class UserUseCase implements IUserServicePort {
         validateEmailAlreadyExists(user.getEmail());
         validateDocumentAlreadyExists(user.getIdDocument());
         //Get role from DB and set to User
-        Role role = rolePersistencePort.findByName(roleName);
-        user.setRole(role);
-
+        getAndSetUserRole(user, roleName);
         //Password encryption
-        String encryptedPassword = passwordEncryptionPort.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
-
+        encryptPassword(user);
         return userPersistencePort.saveUser(user);
     }
 
@@ -106,7 +102,24 @@ public class UserUseCase implements IUserServicePort {
     }
 
 
+    /**
+     * Encrypt a User password with BCrypt
+     * @param user {@link User} with non-encrypted password
+     */
+    private void encryptPassword(User user){
+        String encryptedPassword = passwordEncryptionPort.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
+    }
 
+    /**
+     * Search for a role in DB and assign it to a user.
+     * @param user {@link User} to change the role.
+     * @param roleName {@link RoleName} String of RoleName Enum.
+     */
+    private void getAndSetUserRole(User user, RoleName roleName){
+        Role role = rolePersistencePort.findByName(roleName);
+        user.setRole(role);
+    }
 
 }
 
