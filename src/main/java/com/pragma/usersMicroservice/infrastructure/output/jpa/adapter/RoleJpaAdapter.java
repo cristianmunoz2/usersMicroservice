@@ -3,6 +3,7 @@ package com.pragma.usersMicroservice.infrastructure.output.jpa.adapter;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
+import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.entity.RoleEntity;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.mapper.IRoleEntityMapper;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.repository.IRoleRepository;
@@ -28,10 +29,15 @@ public class RoleJpaAdapter implements IRolePersistencePort {
      *
      * @param name The {@link RoleName} enum to search for.
      * @return The mapped {@link Role} domain object from the database.
+     * @throws RoleNotFoundException if the role name was not found in DB.
      */
     @Override
     public Role findByName(RoleName name) {
-        RoleEntity roleEntity = roleRepository.findByName(name);
-        return roleEntityMapper.toRole(roleEntity);
+        try{
+            RoleEntity roleEntity = roleRepository.findByName(name);
+            return roleEntityMapper.toRole(roleEntity);
+        } catch (Exception e){
+            throw new RoleNotFoundException();
+        }
     }
 }

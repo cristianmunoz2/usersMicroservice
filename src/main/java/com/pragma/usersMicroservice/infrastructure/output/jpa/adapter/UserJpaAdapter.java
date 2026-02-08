@@ -53,6 +53,4 @@ public class UserJpaAdapter implements IUserPersistencePort {
     public boolean existsByIdDocument(String idDocument) {
         return this.userRepository.existsByIdDocument(idDocument);
     }
-
-
 }

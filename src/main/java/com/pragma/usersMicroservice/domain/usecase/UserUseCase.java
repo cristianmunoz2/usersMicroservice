@@ -90,7 +90,6 @@ public class UserUseCase implements IUserServicePort {
      * @param user {@link User} to be registered.
      * @return The saved {@link User}.
      */
-
     @Override
     public User createOwner(User user) {
         return saveUser(user, RoleName.OWNER);
