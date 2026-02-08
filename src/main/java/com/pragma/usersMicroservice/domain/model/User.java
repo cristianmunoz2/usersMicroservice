@@ -1,13 +1,10 @@
 package com.pragma.usersMicroservice.domain.model;
 
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 /**
  * Represents a User within the application's domain model.
- * <p>
- * This class is a pure Java object (POJO) free of external dependencies,
- * adhering to Hexagonal Architecture principles.
- * </p>
  */
 public class User {
     private String id;
@@ -20,20 +17,76 @@ public class User {
     private String password;
     private Role role;
 
+    // --- Constants for Validation ---
+
+    /**
+     * Regex to validate standard email formats.
+     */
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
+    /**
+     * Regex to validate phone numbers. Allows an optional leading '+' and requires digits.
+     */
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+?\\d+$");
+
+    /**
+     * Regex to validate that the ID document contains only numeric characters.
+     */
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d+$");
+
+
     /**
      * Private constructor to enforce the use of the Builder pattern.
+     * <p>
+     * Validates business rules (format and length) before assigning values to ensure
+     * the entity is always in a valid state.
+     * </p>
+     *
      * @param userBuilder The builder instance containing the user data.
+     * @throws IllegalArgumentException if the provided data violates domain rules.
      */
     public User(UserBuilder userBuilder) {
+        // Validation logic is executed before assignment
+        validateFormat(userBuilder.email, userBuilder.phone, userBuilder.idDocument);
+
         this.id = userBuilder.id;
         this.name = userBuilder.name;
-        this.lastName = userBuilder.lastName;      // Fixed: case sensitivity for MapStruct
-        this.idDocument = userBuilder.idDocument;  // Fixed: was assigning userBuilder.name incorrectly
+        this.lastName = userBuilder.lastName;
+        this.idDocument = userBuilder.idDocument;
         this.phone = userBuilder.phone;
-        this.birthDate = userBuilder.birthDate;    // Fixed: case sensitivity for MapStruct
+        this.birthDate = userBuilder.birthDate;
         this.email = userBuilder.email;
         this.password = userBuilder.password;
         this.role = userBuilder.role;
+    }
+
+    /**
+     * Validates that the input data conforms to the required business formats.
+     * @param email      The email address to validate.
+     * @param phone      The phone number to validate.
+     * @param idDocument The identity document to validate.
+     * @throws IllegalArgumentException if any format is invalid or fields are null.
+     */
+    private void validateFormat(String email, String phone, String idDocument) {
+        // 1. Safety check for null values to avoid NullPointerException
+        if (email == null || phone == null || idDocument == null) {
+            throw new IllegalArgumentException("Email, Phone, and ID Document cannot be null");
+        }
+
+        // 2. Validate Email format
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        // 3. Validate Phone: Must be numeric (with optional +) and max 13 characters
+        if (!PHONE_PATTERN.matcher(phone).matches() || phone.length() > 13) {
+            throw new IllegalArgumentException("Phone number must be numeric, contain a maximum of 13 characters, and can include a '+' sign");
+        }
+
+        // 4. Validate ID Document: Must be strictly numeric
+        if (!NUMBER_PATTERN.matcher(idDocument).matches()) {
+            throw new IllegalArgumentException("ID document must be numeric");
+        }
     }
 
     // --- Getters and Setters ---
@@ -120,6 +173,7 @@ public class User {
 
     /**
      * Builder class for constructing User instances.
+     * Uses the Fluent Interface pattern.
      */
     public static class UserBuilder {
         private String id;
@@ -177,6 +231,10 @@ public class User {
             return this;
         }
 
+        /**
+         * Finalizes the construction of the User object.
+         * @return A new, validated User instance.
+         */
         public User build() {
             return new User(this);
         }

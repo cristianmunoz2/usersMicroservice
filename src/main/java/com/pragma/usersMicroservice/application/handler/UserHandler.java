@@ -8,14 +8,31 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service implementation for handling user-related operations.
+ * <p>
+ * This class acts as an orchestrator in the application layer, bridging the gap
+ * between the incoming REST requests (DTOs) and the core business logic (Domain Layer).
+ * It handles data transformation and transaction management.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserHandler implements IUserHandler{
+public class UserHandler implements IUserHandler {
 
     private final IUserServicePort userServicePort;
     private final IUserRegisterRequestMapper userRegisterRequestMapper;
 
+    /**
+     * Orchestrates the process of creating a new user with the 'Owner' role.
+     * <p>
+     * 1. Converts the {@link UserRegisterRequest} DTO into a {@link User} domain entity.
+     * 2. Delegates the business logic to the {@link IUserServicePort}.
+     * </p>
+     *
+     * @param userRegisterRequest The data transfer object containing the registration details.
+     */
     @Override
     public void createOwner(UserRegisterRequest userRegisterRequest) {
         User newOwner = userRegisterRequestMapper.toUser(userRegisterRequest);
