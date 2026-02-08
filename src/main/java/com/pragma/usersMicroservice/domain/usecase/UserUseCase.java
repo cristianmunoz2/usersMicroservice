@@ -6,6 +6,7 @@ import com.pragma.usersMicroservice.domain.exception.IdDocAlreadyExistsException
 import com.pragma.usersMicroservice.domain.exception.UnderAgeException;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.model.User;
+import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
 import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
@@ -20,16 +21,21 @@ public class UserUseCase implements IUserServicePort {
 
     private final IUserPersistencePort userPersistencePort;
     private final IRolePersistencePort rolePersistencePort;
+    private final IPasswordEncryptionPort passwordEncryptionPort;
 
     /**
      * Constructor method
-     * @param userPersistencePort
-     * @param rolePersistencePort
+     * @param userPersistencePort User persistence port
+     * @param rolePersistencePort Role persistence port
+     * @param passwordEncryptionPort Password encryption port
      */
 
-    public UserUseCase(IUserPersistencePort userPersistencePort, IRolePersistencePort rolePersistencePort) {
+    public UserUseCase(IUserPersistencePort userPersistencePort,
+                       IRolePersistencePort rolePersistencePort,
+                       IPasswordEncryptionPort passwordEncryptionPort) {
         this.userPersistencePort = userPersistencePort;
         this.rolePersistencePort = rolePersistencePort;
+        this.passwordEncryptionPort = passwordEncryptionPort;
     }
 
     /**
@@ -92,6 +98,8 @@ public class UserUseCase implements IUserServicePort {
      */
     @Override
     public User createOwner(User user) {
+        String encryptedPassword = passwordEncryptionPort.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
         return saveUser(user, RoleName.OWNER);
     }
 
