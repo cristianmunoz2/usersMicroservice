@@ -1,9 +1,14 @@
 package com.pragma.usersMicroservice.domain.model;
 
 import java.time.LocalDate;
+
 /**
- * Represents a User within the application's domain model
- * */
+ * Represents a User within the application's domain model.
+ * <p>
+ * This class is a pure Java object (POJO) free of external dependencies,
+ * adhering to Hexagonal Architecture principles.
+ * </p>
+ */
 public class User {
     private String id;
     private String name;
@@ -15,17 +20,23 @@ public class User {
     private String password;
     private Role role;
 
+    /**
+     * Private constructor to enforce the use of the Builder pattern.
+     * @param userBuilder The builder instance containing the user data.
+     */
     public User(UserBuilder userBuilder) {
         this.id = userBuilder.id;
         this.name = userBuilder.name;
-        this.idDocument = userBuilder.name;
-        this.lastName = userBuilder.lastName;
-        this.birthDate = userBuilder.birthDate;
+        this.lastName = userBuilder.lastName;      // Fixed: case sensitivity for MapStruct
+        this.idDocument = userBuilder.idDocument;  // Fixed: was assigning userBuilder.name incorrectly
         this.phone = userBuilder.phone;
+        this.birthDate = userBuilder.birthDate;    // Fixed: case sensitivity for MapStruct
         this.email = userBuilder.email;
         this.password = userBuilder.password;
         this.role = userBuilder.role;
     }
+
+    // --- Getters and Setters ---
 
     public String getId() {
         return id;
@@ -99,10 +110,17 @@ public class User {
         this.role = role;
     }
 
-    public static UserBuilder builder(){
+    /**
+     * Initiates the Builder pattern for the User entity.
+     * @return A new instance of UserBuilder.
+     */
+    public static UserBuilder builder() {
         return new UserBuilder();
     }
 
+    /**
+     * Builder class for constructing User instances.
+     */
     public static class UserBuilder {
         private String id;
         private String name;
@@ -114,33 +132,33 @@ public class User {
         private String password;
         private Role role;
 
-        public UserBuilder id(String id){
+        public UserBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public UserBuilder name(String name){
+        public UserBuilder name(String name) {
             this.name = name;
             return this;
         }
 
-        public UserBuilder idDocument(String idDocument){
-            this.idDocument = idDocument;
-            return this;
-        }
-
-        public UserBuilder birthdate(LocalDate birthDate) {
-            this.birthDate = birthDate;
-            return this;
-        }
-
-        public UserBuilder lastname(String lastName) {
+        public UserBuilder lastName(String lastName) {
             this.lastName = lastName;
+            return this;
+        }
+
+        public UserBuilder idDocument(String idDocument) {
+            this.idDocument = idDocument;
             return this;
         }
 
         public UserBuilder phone(String phone) {
             this.phone = phone;
+            return this;
+        }
+
+        public UserBuilder birthDate(LocalDate birthDate) {
+            this.birthDate = birthDate;
             return this;
         }
 
@@ -159,10 +177,8 @@ public class User {
             return this;
         }
 
-        public User build(){
+        public User build() {
             return new User(this);
         }
     }
 }
-
-

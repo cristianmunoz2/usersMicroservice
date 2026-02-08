@@ -1,9 +1,10 @@
 package com.pragma.usersMicroservice.application.dto;
 
-import com.pragma.usersMicroservice.domain.model.Role;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
 import java.time.LocalDate;
 
 /**
@@ -18,6 +19,7 @@ public class UserRegisterRequest {
     private String lastName;
     private String idDocument;
     private String phone;
+    @NotNull(message = "Birthday is required")
     private LocalDate birthDate;
     private String email;
     private String password;
