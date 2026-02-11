@@ -1,4 +1,4 @@
-package com.pragma.usersMicroservice.infrastructure.security;
+package com.pragma.usersMicroservice.infrastructure.security.adapter;
 
 
 import com.pragma.usersMicroservice.domain.model.User;

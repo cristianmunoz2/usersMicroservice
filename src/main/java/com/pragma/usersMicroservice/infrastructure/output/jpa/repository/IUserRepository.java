@@ -2,6 +2,10 @@ package com.pragma.usersMicroservice.infrastructure.output.jpa.repository;
 
 import com.pragma.usersMicroservice.infrastructure.output.jpa.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Optional;
 
 /**
  * Repository interface for User data access.
@@ -24,4 +28,6 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long> {
      * @return True if the ID Document number exists. False if not.
      */
     boolean existsByIdDocument(String idDocument);
+
+    Optional<UserEntity> findByEmail(String username);
 }
