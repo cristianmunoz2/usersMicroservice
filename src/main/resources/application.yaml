@@ -18,8 +18,8 @@ spring:
       on-profile: development
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/users_db
-    username: postgres
+    url: jdbc:postgresql://localhost:5433/users_db
+    username: cristian
     password: "${PG_PASSWORD}"
     driver-class-name: org.postgresql.Driver
 
