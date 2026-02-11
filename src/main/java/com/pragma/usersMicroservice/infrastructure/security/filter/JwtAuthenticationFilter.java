@@ -1,6 +1,5 @@
 package com.pragma.usersMicroservice.infrastructure.security.filter;
 
-import com.pragma.usersMicroservice.infrastructure.security.adapter.CustomUserDetails;
 import com.pragma.usersMicroservice.infrastructure.security.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,22 +9,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
-@RequestMapping
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtService jwtService;
-    private UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -33,36 +31,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        //Get the header Authorization
+
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
         final String userEmail;
 
-        //If there are no Authorization header or is different from bearer, continue with the other filters.
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        //Get token from request
         jwtToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwtToken);
 
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            if(jwtService.isTokenValid(jwtToken, userDetails)){
+
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-
-            filterChain.doFilter(request, response);
-
         }
+        filterChain.doFilter(request, response);
     }
-
-
 }

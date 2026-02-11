@@ -7,7 +7,6 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -19,18 +18,14 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final UserDetailsPasswordService userDetailsPasswordService;
-    @Value("${JWT_SECRET}")
+
+    @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${JWT_EXPIRATION}")
+    @Value("${jwt.expiration}")
     private long expiration;
 
     private SecretKey key;
-
-    public JwtService(UserDetailsPasswordService userDetailsPasswordService) {
-        this.userDetailsPasswordService = userDetailsPasswordService;
-    }
 
     @PostConstruct
     public void init() {
@@ -47,7 +42,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .claim("roles", roles)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + (expiration * 1000)))
+                .expiration(new Date(System.currentTimeMillis() + (expiration * 1000))) // Asumiendo que expiration está en segundos
                 .signWith(key)
                 .compact();
     }
@@ -56,11 +51,10 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T>  claimsResolver){
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-
 
     private Claims extractAllClaims(String token){
         return Jwts.parser()
@@ -72,7 +66,7 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token){
