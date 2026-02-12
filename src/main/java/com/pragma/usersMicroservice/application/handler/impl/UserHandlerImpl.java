@@ -36,9 +36,24 @@ public class UserHandlerImpl implements IUserHandler {
      * @param userRegisterRequest The data transfer object containing the registration details.
      */
     @Override
-    @PreAuthorize("hasRole('ADMIN')") // Only users with 'ADMIN' role can create an owner
     public void createOwner(UserRegisterRequest userRegisterRequest) {
         User newOwner = userRegisterRequestMapper.toUser(userRegisterRequest);
         userServicePort.createOwner(newOwner);
     }
+
+    /**
+     * Orchestrates the process of creating a new user with the 'Employee' role.
+     * <p>
+     * 1. Converts the {@link UserRegisterRequest} DTO into a {@link User} domain entity.
+     * 2. Delegates the business logic to the {@link IUserServicePort}.
+     * </p>
+     *
+     * @param userRegisterRequest The data transfer object containing the registration details.
+     */
+    public void createEmployee(UserRegisterRequest userRegisterRequest) {
+        User newEmployee = userRegisterRequestMapper.toUser(userRegisterRequest);
+        userServicePort.createEmployee(newEmployee);
+    }
+
+
 }
