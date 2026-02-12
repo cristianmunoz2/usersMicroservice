@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class AuthenticationAdapter implements IPasswordEncryptionPort, IJwtProviderPort {
+public class AuthenticationAdapter implements IJwtProviderPort {
 
     /**
      * Adapter for password encryption, allowing the domain to use hashing without knowing the implementation details.
@@ -102,19 +102,6 @@ public class AuthenticationAdapter implements IPasswordEncryptionPort, IJwtProvi
             log.error("Invalid JWT token: {}", e.getMessage());
             return false;
         }
-    }
-
-
-    @Override
-    public String encode(String rawPassword) {
-        log.info("Encoding password");
-        return passwordEncryptionPort.encode(rawPassword);
-    }
-
-    @Override
-    public boolean matches(String rawPassword, String encodedPassword) {
-        log.info("Matching password");
-        return passwordEncryptionPort.matches(rawPassword, encodedPassword);
     }
 
     private SecretKey getKey() {
