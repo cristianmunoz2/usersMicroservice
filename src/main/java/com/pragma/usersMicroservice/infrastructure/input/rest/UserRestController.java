@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
-
 /**
  * REST Controller for managing user-related operations.
  * <p>
@@ -43,6 +41,15 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Registers a new user with the 'Employee' role.
+     * <p>
+     * Validates the request body and delegates execution to the application handler.
+     * </p>
+     *
+     * @param userRegisterRequest The DTO containing the user's registration details.
+     * @return A {@link ResponseEntity} with HTTP status 201 (Created).
+     */
     @PreAuthorize("hasRole('OWNER')")
     @PostMapping("/registerEmployee")
     public ResponseEntity<Void> registerEmployee(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
