@@ -1,6 +1,7 @@
-package com.pragma.usersMicroservice.application.handler;
+package com.pragma.usersMicroservice.application.handler.impl;
 
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
+import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import com.pragma.usersMicroservice.application.mapper.IUserRegisterRequestMapper;
 import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.model.User;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserHandler implements IUserHandler {
+public class UserHandlerImpl implements IUserHandler {
 
     private final IUserServicePort userServicePort;
     private final IUserRegisterRequestMapper userRegisterRequestMapper;
