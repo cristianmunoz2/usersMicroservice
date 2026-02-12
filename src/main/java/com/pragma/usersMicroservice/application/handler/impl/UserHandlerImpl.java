@@ -7,6 +7,7 @@ import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,6 +36,7 @@ public class UserHandlerImpl implements IUserHandler {
      * @param userRegisterRequest The data transfer object containing the registration details.
      */
     @Override
+    @PreAuthorize("hasRole('ADMIN')") // Only users with 'ADMIN' role can create an owner
     public void createOwner(UserRegisterRequest userRegisterRequest) {
         User newOwner = userRegisterRequestMapper.toUser(userRegisterRequest);
         userServicePort.createOwner(newOwner);

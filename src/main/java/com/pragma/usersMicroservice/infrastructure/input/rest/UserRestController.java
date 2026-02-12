@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ public class UserRestController {
      * @param userRegisterRequest The DTO containing the user's registration details.
      * @return A {@link ResponseEntity} with HTTP status 201 (Created).
      */
+    @PreAuthorize()
     @PostMapping("/registerOwner")
     public ResponseEntity<Void> registerOwner(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
         userHandler.createOwner(userRegisterRequest);
