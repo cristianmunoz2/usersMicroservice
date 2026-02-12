@@ -104,6 +104,15 @@ public class UserUseCase implements IUserServicePort {
         return saveUser(user, RoleName.OWNER);
     }
 
+    /**
+     * Creates a new user with the Employee role
+     * @param user {@link User} to be registered.
+     */
+    @Override
+    public void createEmployee(User user) {
+        saveUser(user, RoleName.EMPLOYEE);
+    }
+
 
     /**
      * Encrypt a User password with BCrypt
