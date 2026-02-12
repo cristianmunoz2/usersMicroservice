@@ -1,9 +1,12 @@
 package com.pragma.usersMicroservice.infrastructure.configuration;
 
+import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersMicroservice.domain.api.IUserServicePort;
+import com.pragma.usersMicroservice.domain.spi.IJwtProviderPort;
 import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
 import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.spi.IUserPersistencePort;
+import com.pragma.usersMicroservice.domain.usecase.AuthenticationUseCase;
 import com.pragma.usersMicroservice.domain.usecase.UserUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,5 +54,24 @@ public class BeanConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Creates the main entry point for Authentication business logic.
+     * <p>
+     * Wires the {@link AuthenticationUseCase} with its required output ports (persistence, security, and JWT),
+     * enabling the domain to perform authentication without direct dependencies on the framework.
+     * </p>
+     *
+     * @param passwordEncryptionPort Adapter for password hashing mechanisms.
+     * @param userPersistencePort    Adapter for User database operations.
+     * @param jwtProviderPort       Adapter for JWT token generation and validation.
+     * @return A fully configured instance of the authentication service.
+     */
+    @Bean
+    public IAuthServicePort authServicePort(IPasswordEncryptionPort passwordEncryptionPort,
+                                            IUserPersistencePort userPersistencePort,
+                                            IJwtProviderPort jwtProviderPort) {
+        return new AuthenticationUseCase(passwordEncryptionPort, jwtProviderPort, userPersistencePort );
     }
 }
