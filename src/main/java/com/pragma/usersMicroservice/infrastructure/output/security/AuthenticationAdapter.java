@@ -1,0 +1,131 @@
+package com.pragma.usersMicroservice.infrastructure.output.security;
+
+import com.pragma.usersMicroservice.domain.model.User;
+import com.pragma.usersMicroservice.domain.spi.IJwtProviderPort;
+import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Adapter class that implements both password encryption and JWT token generation.
+ * <p>
+ * This class serves as a bridge between the domain layer's security requirements
+ * and the actual implementation of password hashing and JWT handling.
+ * It allows the domain to remain agnostic of the specific libraries or frameworks used for security.
+ * </p>
+ */
+@Slf4j
+public class AuthenticationAdapter implements IPasswordEncryptionPort, IJwtProviderPort {
+
+    /**
+     * Adapter for password encryption, allowing the domain to use hashing without knowing the implementation details.
+     * This could be a wrapper around Spring Security's PasswordEncoder or any other hashing mechanism.
+     */
+    private final IPasswordEncryptionPort passwordEncryptionPort;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private SecretKey key;
+
+    /**
+     * Initializes the secret key for JWT signing after the properties are set.
+     * <p>
+     * This method converts the secret string into a SecretKey object that can be used for signing JWT tokens.
+     * It ensures that the key is properly initialized before any token generation occurs.
+     * </p>
+     */
+    @PostConstruct
+    public void init() {
+        log.info("Initializing JWT secret key");
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public AuthenticationAdapter(IPasswordEncryptionPort passwordEncryptionPort) {
+        this.passwordEncryptionPort = passwordEncryptionPort;
+    }
+
+    @Override
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        log.info("Generating token for user: {}", user.getEmail());
+        claims.put("role", user.getRole().getName().toString());
+        log.info("User role added to claims: {}", user.getRole().getName().toString());
+        claims.put("userId", user.getId());
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(user.getEmail())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(key, Jwts.SIG.HS512)
+                .compact();
+    }
+
+    @Override
+    public String getEmailFromToken(String token) {
+        log.info("Extracting email from token: {}", token);
+        return getClaims(token).getSubject();
+    }
+
+    @Override
+    public String getRoleFromToken(String token) {
+        log.info("Extracting role from token: {}", token);
+        return getClaims(token).get("role", String.class);
+    }
+
+
+    @Override
+    public boolean validateToken(String token) {
+        try {
+            log.info("Validating token: {}", token);
+            Jwts.parser()
+                    .verifyWith(getKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+
+    @Override
+    public String encode(String rawPassword) {
+        log.info("Encoding password");
+        return passwordEncryptionPort.encode(rawPassword);
+    }
+
+    @Override
+    public boolean matches(String rawPassword, String encodedPassword) {
+        log.info("Matching password");
+        return passwordEncryptionPort.matches(rawPassword, encodedPassword);
+    }
+
+    private SecretKey getKey() {
+        log.info("Retrieving JWT signing key");
+        return this.key;
+    }
+
+    private Claims getClaims(String token) {
+        log.info("Parsing claims from token: {}", token);
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+}
