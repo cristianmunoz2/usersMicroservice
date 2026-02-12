@@ -71,7 +71,8 @@ public class BeanConfiguration {
     @Bean
     public IAuthServicePort authServicePort(IPasswordEncryptionPort passwordEncryptionPort,
                                             IUserPersistencePort userPersistencePort,
-                                            IJwtProviderPort jwtProviderPort) {
-        return new AuthenticationUseCase(passwordEncryptionPort, jwtProviderPort, userPersistencePort );
+                                            IJwtProviderPort jwtProviderPort,
+                                            IRolePersistencePort rolePersistencePort) {
+        return new AuthenticationUseCase(passwordEncryptionPort, jwtProviderPort, userPersistencePort, rolePersistencePort );
     }
 }

@@ -3,7 +3,6 @@ package com.pragma.usersMicroservice.infrastructure.output.jpa.adapter;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
-import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.entity.RoleEntity;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.mapper.IRoleEntityMapper;
 import com.pragma.usersMicroservice.infrastructure.output.jpa.repository.IRoleRepository;
@@ -35,6 +34,12 @@ public class RoleJpaAdapter implements IRolePersistencePort {
     @Override
     public Optional<Role> findByName(RoleName name) {
         Optional<RoleEntity> entity = roleRepository.findByName(name);
+        return entity.map(roleEntityMapper::toRole);
+    }
+
+    @Override
+    public Optional<Role> findById(Long id) {
+        Optional<RoleEntity> entity = roleRepository.findById(id);
         return entity.map(roleEntityMapper::toRole);
     }
 }
