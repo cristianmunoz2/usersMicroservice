@@ -2,7 +2,6 @@ package com.pragma.usersMicroservice.infrastructure.output.security;
 
 import com.pragma.usersMicroservice.domain.model.User;
 import com.pragma.usersMicroservice.domain.spi.IJwtProviderPort;
-import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,22 +18,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Adapter class that implements both password encryption and JWT token generation.
+ * Adapter class that implements JWT token generation and validation.
  * <p>
- * This class serves as a bridge between the domain layer's security requirements
- * and the actual implementation of password hashing and JWT handling.
- * It allows the domain to remain agnostic of the specific libraries or frameworks used for security.
+ * This class serves as a bridge between the domain layer's JWT requirements
+ * and the actual implementation using the JJWT library.
+ * It allows the domain to remain agnostic of the specific libraries used for JWT handling.
  * </p>
  */
 @Slf4j
 @Component
 public class AuthenticationAdapter implements IJwtProviderPort {
 
-    /**
-     * Adapter for password encryption, allowing the domain to use hashing without knowing the implementation details.
-     * This could be a wrapper around Spring Security's PasswordEncoder or any other hashing mechanism.
-     */
-    private final IPasswordEncryptionPort passwordEncryptionPort;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -55,9 +49,6 @@ public class AuthenticationAdapter implements IJwtProviderPort {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public AuthenticationAdapter(IPasswordEncryptionPort passwordEncryptionPort) {
-        this.passwordEncryptionPort = passwordEncryptionPort;
-    }
 
     @Override
     public String generateToken(User user) {

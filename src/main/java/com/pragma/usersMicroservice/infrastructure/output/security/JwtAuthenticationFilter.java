@@ -8,21 +8,29 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
+/**
+ * Filter for JWT authentication on each request.
+ * <p>
+ * This filter intercepts incoming requests, validates the JWT token,
+ * loads user details from the database, and sets the authentication in the security context.
+ * </p>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final IJwtProviderPort jwtProviderPort;
+    private final UserDetailsService userDetailsService;
 
 
     @Override
@@ -33,23 +41,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtProviderPort.validateToken(token)) {
             log.info("Valid JWT token found for request: {}", request.getRequestURI());
+
             String email = jwtProviderPort.getEmailFromToken(token);
             log.info("Extracted email from token: {}", email);
-            String role = jwtProviderPort.getRoleFromToken(token);
-            log.info("Extracted role from token: {}", role);
 
-            log.info("Setting authentication for user: {} with role: {}", email, role);
-            List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                    new SimpleGrantedAuthority("ROLE_" + role)
-            );
-            log.info("Authorities set for user: {}: {}", email, authorities);
+            // Load user details from database using UserDetailsService
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            log.info("User details loaded for: {} with authorities: {}", email, userDetails.getAuthorities());
 
+            // Create authentication token with UserDetails
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(email, null, authorities);
-            log.info("Authentication object created for user: {}: {}", email, authentication);
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+
+            // Set additional details from the request
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            // Set authentication in the security context
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.info("Authentication set in SecurityContext for user: {}", email);
         }
+
         log.info("Proceeding with filter chain for request: {}", request.getRequestURI());
         chain.doFilter(request, response);
         log.info("Completed JWT authentication filter for request: {}", request.getRequestURI());
