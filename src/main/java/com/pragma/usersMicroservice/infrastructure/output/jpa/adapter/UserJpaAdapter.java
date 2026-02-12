@@ -8,6 +8,8 @@ import com.pragma.usersMicroservice.infrastructure.output.jpa.repository.IUserRe
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * JPA Adapter implementation for User persistence.
  * <p>
@@ -52,5 +54,10 @@ public class UserJpaAdapter implements IUserPersistencePort {
     @Override
     public boolean existsByIdDocument(String idDocument) {
         return this.userRepository.existsByIdDocument(idDocument);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return this.userRepository.findByEmail(email).map(userEntityMapper::toUser);
     }
 }
