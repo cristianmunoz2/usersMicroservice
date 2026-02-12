@@ -2,6 +2,7 @@ package com.pragma.usersMicroservice.application.handler.impl;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
 import com.pragma.usersMicroservice.application.dto.LoginRequest;
+import com.pragma.usersMicroservice.application.dto.UserValidationResponse;
 import com.pragma.usersMicroservice.application.handler.IAuthHandler;
 import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import jakarta.transaction.Transactional;
@@ -19,5 +20,10 @@ public class AuthHandlerImpl implements IAuthHandler {
     public JwtResponse login(LoginRequest loginRequestDto) {
         String token = authServicePort.login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
         return new JwtResponse(token);
+    }
+
+    @Override
+    public UserValidationResponse validateToken(String token) {
+        return authServicePort.validateNewToken(token);
     }
 }

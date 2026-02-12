@@ -1,5 +1,6 @@
 package com.pragma.usersMicroservice.domain.usecase;
 
+import com.pragma.usersMicroservice.application.dto.UserValidationResponse;
 import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersMicroservice.domain.exception.InvalidCredentialsException;
 import com.pragma.usersMicroservice.domain.model.Role;
@@ -46,5 +47,34 @@ public class AuthenticationUseCase implements IAuthServicePort {
 
         user.get().setRole(role);
         return jwtProviderPort.generateToken(user.get());
+    }
+
+    @Override
+    public UserValidationResponse validateNewToken(String token) {
+
+
+        //If token is valid and user exists, generate a new token, otherwise throw an exception
+        jwtProviderPort.validateToken(token);
+
+
+        //Get user from token and check if user exists
+        User user = userPersistencePort.findByEmail(jwtProviderPort.getEmailFromToken(token)).orElseThrow(
+                () -> new InvalidCredentialsException("User not found for token")
+        );
+
+
+        //Get role from user and compare it with the role in the token, if they don't match throw an exception
+        Role role = rolePersistencePort.findById(Long.parseLong(user.getRole().getId())).orElseThrow(
+                () -> new InvalidCredentialsException("Role not found for user")
+        );
+        if (!role.getName().toString().equals(jwtProviderPort.getRoleFromToken(token))) {
+            throw new InvalidCredentialsException("Invalid role for token");
+        }
+
+        return UserValidationResponse.builder()
+                .id(user.getId())
+                .role(role.getName().toString())
+                .email(user.getEmail())
+                .build();
     }
 }
