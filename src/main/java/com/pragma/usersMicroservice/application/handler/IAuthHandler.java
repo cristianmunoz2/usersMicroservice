@@ -2,6 +2,7 @@ package com.pragma.usersMicroservice.application.handler;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
 import com.pragma.usersMicroservice.application.dto.LoginRequest;
+import com.pragma.usersMicroservice.application.dto.UserValidationResponse;
 
 /**
  * Interface for handling authentication-related operations.
@@ -13,4 +14,5 @@ import com.pragma.usersMicroservice.application.dto.LoginRequest;
  */
 public interface IAuthHandler {
     JwtResponse login(LoginRequest loginRequestDto);
+    UserValidationResponse validateToken(String token);
 }
