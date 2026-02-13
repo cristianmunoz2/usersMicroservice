@@ -21,7 +21,7 @@ public class AuthRestController {
     }
 
     @GetMapping("/validateToken")
-    public ResponseEntity<UserValidationResponse> validateToken(@RequestParam String token) {
-        return ResponseEntity.ok(authHandler.validateToken(token));
+    public ResponseEntity<UserValidationResponse> validateToken(@RequestHeader("Authorization") String token ) {
+        return ResponseEntity.ok(authHandler.validateToken(token.substring(7)));
     }
 }

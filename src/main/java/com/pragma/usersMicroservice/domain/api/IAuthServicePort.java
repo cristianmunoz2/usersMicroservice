@@ -9,7 +9,7 @@ import com.pragma.usersMicroservice.application.dto.UserValidationResponse;
  * authentication implementations to be used in the application.
  * </p>
  */
-public interface IAuthServicePort {
+public interface    IAuthServicePort {
     /**
      * Authenticates a user with the given email and password.
      *

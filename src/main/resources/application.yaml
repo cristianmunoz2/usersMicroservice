@@ -36,6 +36,3 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
 
-users:
-  microservice:
-    url: http://localhost:8080/auth
