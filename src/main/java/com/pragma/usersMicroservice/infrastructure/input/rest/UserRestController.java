@@ -1,5 +1,6 @@
 package com.pragma.usersMicroservice.infrastructure.input.rest;
 
+import com.pragma.usersMicroservice.application.dto.JwtResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import jakarta.validation.Valid;
@@ -55,6 +56,21 @@ public class UserRestController {
     public ResponseEntity<Void> registerEmployee(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
         userHandler.createEmployee(userRegisterRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * Registers a new user with the 'Customer' role.
+     * <p>
+     * Validates the request body and delegates execution to the application handler.
+     * </p>
+     *
+     * @param userRegisterRequest The DTO containing the user's registration details.
+     * @return A {@link ResponseEntity} with HTTP status 201 (Created) and the generated token.
+     */
+    @PostMapping("/registerCustomer")
+    public ResponseEntity<JwtResponse> registerCustomer(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+        JwtResponse response = userHandler.createCustomer(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 

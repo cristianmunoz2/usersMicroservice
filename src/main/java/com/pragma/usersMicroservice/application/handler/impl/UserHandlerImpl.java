@@ -1,13 +1,14 @@
 package com.pragma.usersMicroservice.application.handler.impl;
 
+import com.pragma.usersMicroservice.application.dto.JwtResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import com.pragma.usersMicroservice.application.mapper.IUserRegisterRequestMapper;
+import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class UserHandlerImpl implements IUserHandler {
 
     private final IUserServicePort userServicePort;
+    private final IAuthServicePort authServicePort;
     private final IUserRegisterRequestMapper userRegisterRequestMapper;
 
     /**
@@ -53,6 +55,23 @@ public class UserHandlerImpl implements IUserHandler {
     public void createEmployee(UserRegisterRequest userRegisterRequest) {
         User newEmployee = userRegisterRequestMapper.toUser(userRegisterRequest);
         userServicePort.createEmployee(newEmployee);
+    }
+
+    /**
+     * Orchestrates the process of creating a new user with the 'Customer' role.
+     * <p>
+     * 1. Converts the {@link UserRegisterRequest} DTO into a {@link User} domain entity.
+     * 2. Delegates the business logic to the {@link IUserServicePort}.
+     * </p>
+     *
+     * @param userRegisterRequest The data transfer object containing the registration details.
+     */
+    @Override
+    public JwtResponse createCustomer(UserRegisterRequest userRegisterRequest) {
+        User user = userRegisterRequestMapper.toUser(userRegisterRequest);
+        userServicePort.createCustomer(user);
+        String token = authServicePort.login(userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+        return JwtResponse.builder().token(token).build();
     }
 
 

@@ -1,7 +1,5 @@
 package com.pragma.usersMicroservice.domain.api;
 
-import com.pragma.usersMicroservice.application.dto.LoginRequest;
-import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.domain.model.User;
 
 /**
@@ -11,17 +9,17 @@ import com.pragma.usersMicroservice.domain.model.User;
 public interface IUserServicePort {
     /**
      * Creates a User with the Owner role.
-     *
      * @param user {@link User} to be registered as Owner.
      * @return The created {@link User}.
      */
     User createOwner(User user);
 
     /**
-     * Registers a new user with the provided registration details.
-     *
-     * @param request The user registration request containing necessary details.
-     * @return A login request to authenticate user later.
+     * Creates a User with the Employee role.
+     * @param user {@link User} to be registered as Employee.
+     * @return The created {@link User}.
      */
-    LoginRequest registerCustomer(UserRegisterRequest request);
+    void createEmployee(User user);
+
+    void createCustomer(User user);
 }
