@@ -25,4 +25,7 @@ public interface    IAuthServicePort {
      * @return A new JWT token if validation is successful, or an error message if it fails.
      */
     UserValidationResponse validateNewToken(String token);
+
+
+
 }
