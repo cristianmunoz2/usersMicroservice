@@ -27,8 +27,8 @@ public class UserEntity {
      * Primary key. Auto-incremented identifier.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     /**
      * User's first name. Mandatory field, max 50 characters.
@@ -77,6 +77,6 @@ public class UserEntity {
      * Foreign key reference to the role ID.
      * Maps the relationship to the roles table.
      */
-    @Column(name = "role_id", nullable = false)
+    @Column(name = "id_role", nullable = false)
     private Long roleId;
 }

@@ -11,10 +11,10 @@ import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
 import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 /**
  * Provides the implementation for user-related use cases
@@ -102,6 +102,24 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public User createOwner(User user) {
         return saveUser(user, RoleName.OWNER);
+    }
+
+    /**
+     * Creates a new user with the Employee role
+     * @param user {@link User} to be registered.
+     */
+    @Override
+    public void createEmployee(User user) {
+        saveUser(user, RoleName.EMPLOYEE);
+    }
+
+    /**
+     * Creates a new user with the Customer role
+     * @param user {@link User} to be registered.
+     */
+    @Override
+    public void createCustomer(User user) {
+        saveUser(user, RoleName.CUSTOMER);
     }
 
 

@@ -32,3 +32,7 @@ spring:
         format_sql: true
     database: postgresql
 
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+

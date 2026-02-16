@@ -2,6 +2,8 @@ package com.pragma.usersMicroservice.domain.spi;
 
 import com.pragma.usersMicroservice.domain.model.User;
 
+import java.util.Optional;
+
 /**
  * Connects model with the application layers to implement User use cases.
  * It must connect with a secondary adapter.
@@ -27,4 +29,11 @@ public interface IUserPersistencePort {
      * @return True if the ID Document number exists. False if not.
      */
     boolean existsByIdDocument(String idDocument);
+
+    /**
+     * Finds a User by email.
+     * @param email The email to search for.
+     * @return An Optional containing the User if found, or empty if not found.
+     */
+    Optional<User> findByEmail(String email);
 }

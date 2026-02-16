@@ -23,4 +23,11 @@ public interface IRoleRepository extends JpaRepository<RoleEntity, Long> {
      * @return An Optional containing the RoleEntity if found, or empty if not.
      */
     Optional<RoleEntity> findByName(RoleName name);
+    /**
+     * Retrieves a RoleEntity based on its unique identifier.
+     *
+     * @param id The unique identifier of the role (as a String).
+     * @return An Optional containing the RoleEntity if found, or empty if not.
+     */
+    Optional<RoleEntity> findById(Long id);
 }

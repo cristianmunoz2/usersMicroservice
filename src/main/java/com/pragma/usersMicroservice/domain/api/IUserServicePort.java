@@ -13,4 +13,13 @@ public interface IUserServicePort {
      * @return The created {@link User}.
      */
     User createOwner(User user);
+
+    /**
+     * Creates a User with the Employee role.
+     * @param user {@link User} to be registered as Employee.
+     * @return The created {@link User}.
+     */
+    void createEmployee(User user);
+
+    void createCustomer(User user);
 }
