@@ -26,4 +26,5 @@ public class AuthHandlerImpl implements IAuthHandler {
     public UserValidationResponse validateToken(String token) {
         return authServicePort.validateNewToken(token);
     }
+
 }

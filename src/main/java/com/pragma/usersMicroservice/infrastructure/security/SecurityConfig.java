@@ -17,13 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Security configuration for the application.
- * <p>
- * Configures JWT authentication, authorization rules, and integrates
- * UserDetailsService for loading user information from the database.
- * </p>
- */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -33,27 +26,26 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Configures the security filter chain.
-     * <p>
-     * Defines which endpoints are public and which require authentication,
-     * and adds the JWT filter to the security chain.
-     * </p>
-     *
-     * @param http HttpSecurity configuration.
-     * @return Configured SecurityFilterChain.
-     * @throws Exception if configuration fails.
-     */
+    private static final String[] WHITE_LIST_URL = {
+            "/auth/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/users/registerCustomer"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+
                         .requestMatchers("/users/registerOwner").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/users/registerEmployee").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -61,14 +53,6 @@ public class SecurityConfig {
                 .build();
     }
 
-    /**
-     * Creates the authentication provider that uses UserDetailsService and PasswordEncoder.
-     * <p>
-     * This provider is responsible for validating user credentials during authentication.
-     * </p>
-     *
-     * @return Configured DaoAuthenticationProvider.
-     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
@@ -76,16 +60,6 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    /**
-     * Exposes the AuthenticationManager as a bean.
-     * <p>
-     * This is used for programmatic authentication, such as during login.
-     * </p>
-     *
-     * @param config Authentication configuration.
-     * @return AuthenticationManager instance.
-     * @throws Exception if configuration fails.
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

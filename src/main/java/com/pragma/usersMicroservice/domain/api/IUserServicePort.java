@@ -20,4 +20,6 @@ public interface IUserServicePort {
      * @return The created {@link User}.
      */
     void createEmployee(User user);
+
+    void createCustomer(User user);
 }
