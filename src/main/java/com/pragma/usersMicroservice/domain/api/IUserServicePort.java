@@ -22,4 +22,6 @@ public interface IUserServicePort {
     void createEmployee(User user);
 
     void createCustomer(User user);
+
+    boolean existsById(String id);
 }

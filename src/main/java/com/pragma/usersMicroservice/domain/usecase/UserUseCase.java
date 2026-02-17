@@ -11,7 +11,6 @@ import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
 import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -120,6 +119,16 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public void createCustomer(User user) {
         saveUser(user, RoleName.CUSTOMER);
+    }
+
+    /**
+     * Checks if a user exists by their ID.
+     * @param id The ID of the user to check.
+     * @return true if the user exists, false otherwise.
+     */
+    @Override
+    public boolean existsById(String id) {
+        return userPersistencePort.existsById(id);
     }
 
 
