@@ -1,6 +1,5 @@
 package com.pragma.usersMicroservice.domain.usecase;
 
-import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.dto.UserValidationResponse;
 import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersMicroservice.domain.exception.InvalidCredentialsException;
