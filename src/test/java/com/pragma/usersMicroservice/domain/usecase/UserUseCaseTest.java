@@ -3,6 +3,7 @@ package com.pragma.usersMicroservice.domain.usecase;
 import com.pragma.usersMicroservice.domain.exception.EmailAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.IdDocAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.UnderAgeException;
+import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.model.User;
 import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
@@ -12,16 +13,18 @@ import com.pragma.usersMicroservice.domain.util.RoleName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserUseCaseTest {
@@ -38,123 +41,141 @@ class UserUseCaseTest {
     @InjectMocks
     private UserUseCase userUseCase;
 
-    //Test Case UT-HU1-001 ----------------------------------------------------------
-    @DisplayName("Should save user successfully with Encrypted Password and Owner Role")
+    // --- Happy Path Tests ---
+
     @Test
-    void saveUser_shouldCreateUser_whenAllRulesAreMet() {
-        //Arrange
-        User validUser = new User.UserBuilder()
-                .name("Happy")
-                .lastName("Path")
-                .email("valid@test.com")
-                .phone("+573001234567")
-                .idDocument("111222333")
-                .password("plainPassword")
-                .birthDate(LocalDate.now().minusYears(25))
-                .role(null)
+    @DisplayName("CreateOwner: Should save user with OWNER role and Encrypted Password")
+    void createOwner_shouldSaveUser_whenDataIsValid() {
+        // Arrange
+        User validUser = buildUser(25);
+
+        Role ownerRole = Role.builder()
+                .id("1")
+                .name(RoleName.OWNER)
+                .description("Owner Role Description")
                 .build();
+
+        String encryptedPass = "encodedPass123";
 
         when(userPersistencePort.existsByEmail(anyString())).thenReturn(false);
         when(userPersistencePort.existsByIdDocument(anyString())).thenReturn(false);
-
-        when(passwordEncryptionPort.encode("plainPassword")).thenReturn("encrypted$123");
-
-        Role ownerRole = new Role.RoleBuilder()
-                .id("0")
-                        .name(RoleName.OWNER)
-                                .description("OWNER_ROLE").build();
         when(rolePersistencePort.findByName(RoleName.OWNER)).thenReturn(Optional.of(ownerRole));
+        when(passwordEncryptionPort.encode(anyString())).thenReturn(encryptedPass);
 
-        //Act
-        userUseCase.saveUser(validUser, RoleName.OWNER);
+        when(userPersistencePort.saveUser(any(User.class))).thenReturn(validUser);
 
-        //Assert and verify
+        // Act
+        User result = userUseCase.createOwner(validUser);
+
+        // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userPersistencePort).saveUser(userCaptor.capture());
 
         User capturedUser = userCaptor.getValue();
-        //Assert password is encrypted
-        assertEquals("encrypted$123", capturedUser.getPassword());
 
-        //Assert User has Owner role
-        assertNotNull(capturedUser.getRole());
-        assertEquals(RoleName.OWNER, capturedUser.getRole().getName());
-
-        //Assert user was successfully created
-        verify(userPersistencePort).existsByEmail("valid@test.com");
+        assertEquals(encryptedPass, capturedUser.getPassword(), "Password should be encrypted");
+        assertEquals(RoleName.OWNER, capturedUser.getRole().getName(), "Role should be OWNER");
+        assertNotNull(result);
     }
 
-    @DisplayName("")
-
-
-    @DisplayName("An Owner user must be 18 years old at least")
     @Test
-    void saveUser_shouldThrowException_whenUserIsUnderAge() {
-        User kidUser = new User.UserBuilder()
-                .name("Kid")
-                .lastName("Test")
-                .email("kid@test.com")
-                .phone("+573000000000")
-                .idDocument("1000000000")
-                .password("1234")
-                .role(null)
-                .birthDate(LocalDate.now().minusYears(10))
+    @DisplayName("CreateEmployee: Should set EMPLOYEE role and call save (void return)")
+    void createEmployee_shouldSetEmployeeRole_whenDataIsValid() {
+        // Arrange
+        User validUser = buildUser(30);
+
+        Role employeeRole = Role.builder()
+                .id("2")
+                .name(RoleName.EMPLOYEE)
+                .description("Employee Role Description")
                 .build();
 
+        when(userPersistencePort.existsByEmail(anyString())).thenReturn(false);
+        when(userPersistencePort.existsByIdDocument(anyString())).thenReturn(false);
+        when(rolePersistencePort.findByName(RoleName.EMPLOYEE)).thenReturn(Optional.of(employeeRole));
+        when(passwordEncryptionPort.encode(anyString())).thenReturn("xyz");
 
-        assertThrows(UnderAgeException.class, () -> {
-            userUseCase.saveUser(kidUser, null);
-        });
+        // Act
+        userUseCase.createEmployee(validUser);
 
-        verify(userPersistencePort, never()).saveUser(any());
+        // Assert
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userPersistencePort).saveUser(userCaptor.capture());
+
+        User capturedUser = userCaptor.getValue();
+        assertEquals(RoleName.EMPLOYEE, capturedUser.getRole().getName());
     }
 
 
-    @DisplayName("Email must be unique")
     @Test
-    void saveUser_shouldThrowException_whenEmailAlreadyExists() {
-        User existingUser = new User.UserBuilder()
-                .name("Existing")
-                .lastName("User")
-                .email("duplicate@test.com")
-                .phone("+573000000000")
-                .idDocument("123456789")
-                .password("password123")
-                .birthDate(LocalDate.now().minusYears(20))
-                .role(null)
-                .build();
+    @DisplayName("ValidateAge: Should throw UnderAgeException when user is younger than 18")
+    void saveUser_shouldThrowUnderAgeException_whenUserIsMinor() {
+        // Arrange
+        User kidUser = buildUser(17); // 17 años
 
-        when(userPersistencePort.existsByEmail("duplicate@test.com")).thenReturn(true);
+        // Act & Assert
+        assertThrows(UnderAgeException.class, () -> userUseCase.createOwner(kidUser));
 
-        assertThrows(EmailAlreadyExistsException.class, () -> {
-            userUseCase.saveUser(existingUser, null);
-        });
+        // Verify
+        verify(userPersistencePort, never()).saveUser(any(User.class));
+    }
 
-        verify(userPersistencePort, never()).saveUser(any());
-        verify(passwordEncryptionPort, never()).encode(any());
+    @Test
+    @DisplayName("ValidateEmail: Should throw EmailAlreadyExistsException when email exists")
+    void saveUser_shouldThrowEmailException_whenEmailExists() {
+        // Arrange
+        User user = buildUser(20);
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(EmailAlreadyExistsException.class, () -> userUseCase.createOwner(user));
+
+        verify(userPersistencePort, never()).saveUser(any(User.class));
+    }
+
+    @Test
+    @DisplayName("ValidateDoc: Should throw IdDocAlreadyExistsException when document exists")
+    void saveUser_shouldThrowIdDocException_whenDocExists() {
+        // Arrange
+        User user = buildUser(20);
+        when(userPersistencePort.existsByEmail(anyString())).thenReturn(false);
+        when(userPersistencePort.existsByIdDocument(user.getIdDocument())).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(IdDocAlreadyExistsException.class, () -> userUseCase.createOwner(user));
+
+        verify(userPersistencePort, never()).saveUser(any(User.class));
+    }
+
+    @Test
+    @DisplayName("ValidateRole: Should throw RoleNotFoundException if role is not in DB")
+    void saveUser_shouldThrowRoleNotFound_whenRoleIsMissing() {
+        // Arrange
+        User user = buildUser(20);
+        when(userPersistencePort.existsByEmail(anyString())).thenReturn(false);
+        when(userPersistencePort.existsByIdDocument(anyString())).thenReturn(false);
+
+        when(rolePersistencePort.findByName(any())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RoleNotFoundException.class, () -> userUseCase.createOwner(user));
+
+        verify(userPersistencePort, never()).saveUser(any(User.class));
     }
 
 
-    @DisplayName("Id Document must be unique")
-    @Test
-    void saveUser_shouldThrownException_ifDocumentAlreadyExists(){
-        User existingDocumentUser = new User.UserBuilder()
+    // --- Helper Method ---
+
+    private User buildUser(int age) {
+        return User.builder()
                 .name("Test")
                 .lastName("User")
-                .email("email@test.com")
-                .phone("+573000000000")
-                .idDocument("123456789")
-                .password("password123")
-                .birthDate(LocalDate.now().minusYears(20))
+                .email("test@mail.com")
+                .phone("+573001234567")
+                .idDocument("100200300")
+                .password("plainPassword")
+                .birthDate(LocalDate.now().minusYears(age))
                 .role(null)
                 .build();
-
-        when(userPersistencePort.existsByIdDocument("123456789")).thenReturn(true);
-
-        assertThrows(IdDocAlreadyExistsException.class, () -> {
-            userUseCase.saveUser(existingDocumentUser, null);
-        });
-
     }
-
 }
