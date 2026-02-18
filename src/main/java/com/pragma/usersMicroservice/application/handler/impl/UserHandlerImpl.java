@@ -74,5 +74,10 @@ public class UserHandlerImpl implements IUserHandler {
         return JwtResponse.builder().token(token).build();
     }
 
+    @Override
+    public boolean existsById(String id) {
+        return userServicePort.existsById(id);
+    }
+
 
 }

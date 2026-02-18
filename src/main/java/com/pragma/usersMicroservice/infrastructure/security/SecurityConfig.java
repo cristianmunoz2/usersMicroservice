@@ -31,7 +31,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
-            "/users/registerCustomer"
+            "/users/registerCustomer",
     };
 
     @Bean
@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/registerOwner").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/users/registerEmployee").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("users/exists/**").hasAuthority("ROLE_OWNER")
 
                         .anyRequest().authenticated()
                 )

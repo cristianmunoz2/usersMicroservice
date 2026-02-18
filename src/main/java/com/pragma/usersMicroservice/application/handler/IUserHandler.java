@@ -29,4 +29,12 @@ public interface IUserHandler {
      * @param userRegisterRequest The DTO containing the user's registration data.
      */
     JwtResponse createCustomer(UserRegisterRequest userRegisterRequest);
+
+    /**
+     * Checks if a user with the given ID exists in the system.
+     *
+     * @param id The unique identifier of the user.
+     * @return true if the user exists, false otherwise.
+     */
+    boolean existsById(String id);
 }
