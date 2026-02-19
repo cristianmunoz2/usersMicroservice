@@ -1,6 +1,8 @@
 package com.pragma.usersMicroservice.infrastructure.input.rest;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdRequest;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import jakarta.validation.Valid;
@@ -8,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST Controller for managing user-related operations.
@@ -73,5 +72,15 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> existsById(@PathVariable String id) {
+        boolean exists = userHandler.existsById(id);
+        return ResponseEntity.ok(exists);
+    }
 
+    @GetMapping("/phone")
+    public ResponseEntity<PhoneByIdResponse> getPhoneByEmail(@RequestParam("id") String id) {
+        PhoneByIdResponse response = userHandler.getPhoneById(id);
+        return ResponseEntity.ok(response);
+    }
 }
