@@ -75,4 +75,11 @@ public class UserRestController {
         boolean exists = userHandler.existsById(id);
         return ResponseEntity.ok(exists);
     }
+
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @GetMapping("/phone")
+    public ResponseEntity<String> getPhoneByEmail(@RequestParam String email) {
+        String phone = userHandler.getPhoneByEmail(email);
+        return ResponseEntity.ok(phone);
+    }
 }

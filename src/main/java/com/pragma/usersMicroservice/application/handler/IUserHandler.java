@@ -37,4 +37,12 @@ public interface IUserHandler {
      * @return true if the user exists, false otherwise.
      */
     boolean existsById(String id);
+
+    /**
+     * Gets the phone number of a user by their email.
+     *
+     * @param email The email of the user.
+     * @return The phone number of the user.
+     */
+    String getPhoneByEmail(String email);
 }

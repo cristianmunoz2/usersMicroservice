@@ -7,9 +7,9 @@ import com.pragma.usersMicroservice.application.mapper.IUserRegisterRequestMappe
 import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.model.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service implementation for handling user-related operations.
@@ -79,5 +79,9 @@ public class UserHandlerImpl implements IUserHandler {
         return userServicePort.existsById(id);
     }
 
+    @Override
+    public String getPhoneByEmail(String email) {
+        return userServicePort.getPhoneByEmail(email);
+    }
 
 }

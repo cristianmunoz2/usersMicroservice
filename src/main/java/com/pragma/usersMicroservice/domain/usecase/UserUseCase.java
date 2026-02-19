@@ -4,6 +4,7 @@ import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.exception.EmailAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.IdDocAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.UnderAgeException;
+import com.pragma.usersMicroservice.domain.exception.UserNotFoundException;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.model.User;
 import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
@@ -129,6 +130,19 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public boolean existsById(String id) {
         return userPersistencePort.existsById(id);
+    }
+
+    /**
+     * Gets the phone number of a user by their email.
+     * @param email The email of the user.
+     * @return The phone number of the user.
+     * @throws UserNotFoundException if the user is not found.
+     */
+    @Override
+    public String getPhoneByEmail(String email) {
+        return userPersistencePort.findByEmail(email)
+                .map(User::getPhone)
+                .orElseThrow(UserNotFoundException::new);
     }
 
 
