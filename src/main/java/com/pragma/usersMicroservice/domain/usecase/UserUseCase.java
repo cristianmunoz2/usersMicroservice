@@ -4,6 +4,7 @@ import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.exception.EmailAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.IdDocAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.UnderAgeException;
+import com.pragma.usersMicroservice.domain.exception.UserNotFoundException;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.model.User;
 import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
@@ -131,6 +132,10 @@ public class UserUseCase implements IUserServicePort {
         return userPersistencePort.existsById(id);
     }
 
+    @Override
+    public String getPhoneById(String id) {
+        return userPersistencePort.getPhoneById(id);
+    }
 
     /**
      * Encrypt a User password with BCrypt

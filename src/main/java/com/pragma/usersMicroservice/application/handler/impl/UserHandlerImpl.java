@@ -1,15 +1,16 @@
 package com.pragma.usersMicroservice.application.handler.impl;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import com.pragma.usersMicroservice.application.mapper.IUserRegisterRequestMapper;
 import com.pragma.usersMicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.model.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service implementation for handling user-related operations.
@@ -74,5 +75,16 @@ public class UserHandlerImpl implements IUserHandler {
         return JwtResponse.builder().token(token).build();
     }
 
+    @Override
+    public boolean existsById(String id) {
+        return userServicePort.existsById(id);
+    }
+
+    @Override
+    public PhoneByIdResponse getPhoneById(String email) {
+        PhoneByIdResponse response = new PhoneByIdResponse();
+        response.setPhoneNumber(userServicePort.getPhoneById(email));
+        return response;
+    }
 
 }
