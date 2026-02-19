@@ -1,0 +1,85 @@
+package com.pragma.usersmicroservice.infrastructure.input.rest;
+
+import com.pragma.usersmicroservice.application.dto.response.JwtResponse;
+import com.pragma.usersmicroservice.application.dto.response.PhoneByIdResponse;
+import com.pragma.usersmicroservice.application.dto.request.UserRegisterRequest;
+import com.pragma.usersmicroservice.application.handler.IUserHandler;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * REST Controller for managing user-related operations.
+ * <p>
+ * Exposes endpoints to interact with the user microservice via HTTP.
+ * </p>
+ */
+@RestController
+@RequestMapping("/users/")
+@RequiredArgsConstructor
+public class UserRestController {
+
+    private final IUserHandler userHandler;
+
+    /**
+     * Registers a new user with the 'Owner' role.
+     * <p>
+     * Validates the request body and delegates execution to the application handler.
+     * </p>
+     *
+     * @param userRegisterRequest The DTO containing the user's registration details.
+     * @return A {@link ResponseEntity} with HTTP status 201 (Created).
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/registerOwner")
+    public ResponseEntity<Void> registerOwner(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
+        userHandler.createOwner(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * Registers a new user with the 'Employee' role.
+     * <p>
+     * Validates the request body and delegates execution to the application handler.
+     * </p>
+     *
+     * @param userRegisterRequest The DTO containing the user's registration details.
+     * @return A {@link ResponseEntity} with HTTP status 201 (Created).
+     */
+    @PreAuthorize("hasRole('OWNER')")
+    @PostMapping("/registerEmployee")
+    public ResponseEntity<Void> registerEmployee(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
+        userHandler.createEmployee(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * Registers a new user with the 'Customer' role.
+     * <p>
+     * Validates the request body and delegates execution to the application handler.
+     * </p>
+     *
+     * @param userRegisterRequest The DTO containing the user's registration details.
+     * @return A {@link ResponseEntity} with HTTP status 201 (Created) and the generated token.
+     */
+    @PostMapping("/registerCustomer")
+    public ResponseEntity<JwtResponse> registerCustomer(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+        JwtResponse response = userHandler.createCustomer(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> existsById(@PathVariable String id) {
+        boolean exists = userHandler.existsById(id);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/phone")
+    public ResponseEntity<PhoneByIdResponse> getPhoneByEmail(@RequestParam("id") String id) {
+        PhoneByIdResponse response = userHandler.getPhoneById(id);
+        return ResponseEntity.ok(response);
+    }
+}
