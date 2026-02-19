@@ -46,8 +46,10 @@ public interface IUserPersistencePort {
 
     /**
      * Gets the phone number of a user by their email.
-     * @param email The email of the user.
+     * @param id The id of the user.
      * @return The phone number of the user.
      */
-    String getPhoneByEmail(String email);
+    String getPhoneById(String id);
+
+    Optional<User> findById(String id);
 }

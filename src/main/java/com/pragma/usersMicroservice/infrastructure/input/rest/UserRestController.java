@@ -1,6 +1,8 @@
 package com.pragma.usersMicroservice.infrastructure.input.rest;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdRequest;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import jakarta.validation.Valid;
@@ -76,10 +78,9 @@ public class UserRestController {
         return ResponseEntity.ok(exists);
     }
 
-    @PreAuthorize("hasRole('EMPLOYEE')")
     @GetMapping("/phone")
-    public ResponseEntity<String> getPhoneByEmail(@RequestParam String email) {
-        String phone = userHandler.getPhoneByEmail(email);
-        return ResponseEntity.ok(phone);
+    public ResponseEntity<PhoneByIdResponse> getPhoneByEmail(@RequestParam("id") String id) {
+        PhoneByIdResponse response = userHandler.getPhoneById(id);
+        return ResponseEntity.ok(response);
     }
 }

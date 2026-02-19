@@ -26,9 +26,9 @@ public interface IUserServicePort {
     boolean existsById(String id);
 
     /**
-     * Gets the phone number of a user by their email.
-     * @param email The email of the user.
+     * Returns the phone number of a user by their ID.
+     * @param id The ID of the user.
      * @return The phone number of the user.
      */
-    String getPhoneByEmail(String email);
+    String getPhoneById(String id);
 }

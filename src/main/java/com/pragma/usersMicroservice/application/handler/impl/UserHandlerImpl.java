@@ -1,6 +1,7 @@
 package com.pragma.usersMicroservice.application.handler.impl;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 import com.pragma.usersMicroservice.application.handler.IUserHandler;
 import com.pragma.usersMicroservice.application.mapper.IUserRegisterRequestMapper;
@@ -80,8 +81,10 @@ public class UserHandlerImpl implements IUserHandler {
     }
 
     @Override
-    public String getPhoneByEmail(String email) {
-        return userServicePort.getPhoneByEmail(email);
+    public PhoneByIdResponse getPhoneById(String email) {
+        PhoneByIdResponse response = new PhoneByIdResponse();
+        response.setPhoneNumber(userServicePort.getPhoneById(email));
+        return response;
     }
 
 }

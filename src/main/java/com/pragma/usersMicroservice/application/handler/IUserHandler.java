@@ -1,6 +1,7 @@
 package com.pragma.usersMicroservice.application.handler;
 
 import com.pragma.usersMicroservice.application.dto.JwtResponse;
+import com.pragma.usersMicroservice.application.dto.PhoneByIdResponse;
 import com.pragma.usersMicroservice.application.dto.UserRegisterRequest;
 
 /**
@@ -39,10 +40,10 @@ public interface IUserHandler {
     boolean existsById(String id);
 
     /**
-     * Gets the phone number of a user by their email.
+     * Gets the phone number of a user by their id.
      *
-     * @param email The email of the user.
+     * @param id The id of the user.
      * @return The phone number of the user.
      */
-    String getPhoneByEmail(String email);
+    PhoneByIdResponse getPhoneById(String id);
 }
