@@ -4,6 +4,7 @@ import com.pragma.usersMicroservice.domain.api.IUserServicePort;
 import com.pragma.usersMicroservice.domain.exception.EmailAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.IdDocAlreadyExistsException;
 import com.pragma.usersMicroservice.domain.exception.UnderAgeException;
+import com.pragma.usersMicroservice.domain.exception.UserNotFoundException;
 import com.pragma.usersMicroservice.domain.model.Role;
 import com.pragma.usersMicroservice.domain.model.User;
 import com.pragma.usersMicroservice.domain.spi.IPasswordEncryptionPort;
@@ -11,7 +12,6 @@ import com.pragma.usersMicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.usersMicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.usersMicroservice.domain.util.RoleName;
 import com.pragma.usersMicroservice.infrastructure.exception.RoleNotFoundException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -122,6 +122,20 @@ public class UserUseCase implements IUserServicePort {
         saveUser(user, RoleName.CUSTOMER);
     }
 
+    /**
+     * Checks if a user exists by their ID.
+     * @param id The ID of the user to check.
+     * @return true if the user exists, false otherwise.
+     */
+    @Override
+    public boolean existsById(String id) {
+        return userPersistencePort.existsById(id);
+    }
+
+    @Override
+    public String getPhoneById(String id) {
+        return userPersistencePort.getPhoneById(id);
+    }
 
     /**
      * Encrypt a User password with BCrypt

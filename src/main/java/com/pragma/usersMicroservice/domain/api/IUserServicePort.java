@@ -22,4 +22,13 @@ public interface IUserServicePort {
     void createEmployee(User user);
 
     void createCustomer(User user);
+
+    boolean existsById(String id);
+
+    /**
+     * Returns the phone number of a user by their ID.
+     * @param id The ID of the user.
+     * @return The phone number of the user.
+     */
+    String getPhoneById(String id);
 }

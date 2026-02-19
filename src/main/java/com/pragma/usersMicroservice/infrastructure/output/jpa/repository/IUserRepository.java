@@ -33,4 +33,12 @@ public interface IUserRepository extends JpaRepository<UserEntity, String> {
      * @return An Optional containing the UserEntity if found, or empty if not found.
      */
     Optional<UserEntity> findByEmail(String email);
+
+
+    /**
+     * Validates if a user with the given ID exists in BD.
+     * @param id The user ID to validate
+     * @return True if the user ID exists. False if not.
+     */
+    boolean existsById(String id);
 }

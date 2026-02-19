@@ -36,4 +36,20 @@ public interface IUserPersistencePort {
      * @return An Optional containing the User if found, or empty if not found.
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Validates if a user with the given ID exists in the database.
+     * @param id The ID of the user to check for existence.
+     * @return True if a user with the given ID exists, false otherwise.
+     */
+    boolean existsById(String id);
+
+    /**
+     * Gets the phone number of a user by their email.
+     * @param id The id of the user.
+     * @return The phone number of the user.
+     */
+    String getPhoneById(String id);
+
+    Optional<User> findById(String id);
 }
