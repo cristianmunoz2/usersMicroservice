@@ -2,6 +2,7 @@ package com.pragma.usersmicroservice.infrastructure.output.jpa.repository;
 
 import com.pragma.usersmicroservice.infrastructure.output.jpa.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -41,4 +42,8 @@ public interface IUserRepository extends JpaRepository<UserEntity, String> {
      * @return True if the user ID exists. False if not.
      */
     boolean existsById(String id);
+
+
+    @Query("SELECT u.email FROM UserEntity u WHERE u.id = :id")
+    String findEmailById(String id);
 }

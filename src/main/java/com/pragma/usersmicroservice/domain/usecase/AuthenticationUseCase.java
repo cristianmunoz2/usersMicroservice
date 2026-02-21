@@ -35,40 +35,47 @@ public class AuthenticationUseCase implements IAuthServicePort {
      */
     @Override
     public String login(String email, String password) {
-        Optional<User> user = userPersistencePort.findByEmail(email);
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
-        if (user.isEmpty() || !passwordEncryptionPort.matches(password, user.get().getPassword())) {
+        if (!passwordEncryptionPort.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException("Invalid credentials");
         }
 
-        Role role = rolePersistencePort.findById(Long.parseLong(user.get().getRole().getId())).orElseThrow(
-                () -> new InvalidCredentialsException("Role not found for user")
-        );
+        Role role = rolePersistencePort.findById(Long.parseLong(user.getRole().getId()))
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
-        user.get().setRole(role);
-        return jwtProviderPort.generateToken(user.get());
+        User authenticatedUser = User.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .lastName(user.getLastName())
+                .idDocument(user.getIdDocument())
+                .phone(user.getPhone())
+                .birthDate(user.getBirthDate())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .role(role)
+                .build();
+
+        return jwtProviderPort.generateToken(authenticatedUser);
     }
 
     @Override
     public UserValidationResponse validateNewToken(String token) {
+        if (!jwtProviderPort.validateToken(token)) {
+            throw new InvalidCredentialsException("Invalid credentials");
+        }
 
+        String email = jwtProviderPort.getEmailFromToken(token);
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
-        //If token is valid and user exists, generate a new token, otherwise throw an exception
-        jwtProviderPort.validateToken(token);
+        Role role = rolePersistencePort.findById(Long.parseLong(user.getRole().getId()))
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
-
-        //Get user from token and check if user exists
-        User user = userPersistencePort.findByEmail(jwtProviderPort.getEmailFromToken(token)).orElseThrow(
-                () -> new InvalidCredentialsException("User not found for token")
-        );
-
-
-        //Get role from user and compare it with the role in the token, if they don't match throw an exception
-        Role role = rolePersistencePort.findById(Long.parseLong(user.getRole().getId())).orElseThrow(
-                () -> new InvalidCredentialsException("Role not found for user")
-        );
-        if (!role.getName().toString().equals(jwtProviderPort.getRoleFromToken(token))) {
-            throw new InvalidCredentialsException("Invalid role for token");
+        String tokenRole = jwtProviderPort.getRoleFromToken(token);
+        if (!role.getName().toString().equals(tokenRole)) {
+            throw new InvalidCredentialsException("Invalid credentials");
         }
 
         return UserValidationResponse.builder()

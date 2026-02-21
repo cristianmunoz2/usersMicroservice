@@ -1,5 +1,6 @@
 package com.pragma.usersmicroservice.application.handler;
 
+import com.pragma.usersmicroservice.application.dto.response.EmailByIdResponse;
 import com.pragma.usersmicroservice.application.dto.response.JwtResponse;
 import com.pragma.usersmicroservice.application.dto.response.PhoneByIdResponse;
 import com.pragma.usersmicroservice.application.dto.request.UserRegisterRequest;
@@ -46,4 +47,6 @@ public interface IUserHandler {
      * @return The phone number of the user.
      */
     PhoneByIdResponse getPhoneById(String id);
+
+    EmailByIdResponse getEmailById(String id);
 }

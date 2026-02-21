@@ -52,4 +52,6 @@ public interface IUserPersistencePort {
     String getPhoneById(String id);
 
     Optional<User> findById(String id);
+
+    String findEmailById(String id);
 }

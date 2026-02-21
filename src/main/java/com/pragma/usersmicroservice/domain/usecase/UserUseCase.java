@@ -63,7 +63,7 @@ public class UserUseCase implements IUserServicePort {
     }
 
     /**
-     * Validates if Id Document is already registered in the DB.
+     * Validates if id Document is already registered in the DB.
      * @param idDocument Id document number to validate
      */
     private void validateDocumentAlreadyExists(String idDocument){
@@ -145,6 +145,13 @@ public class UserUseCase implements IUserServicePort {
         return userPersistencePort.getPhoneById(id);
     }
 
+    @Override
+    public String findEmailById(String id) {
+        if (!userPersistencePort.existsById(id)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        return userPersistencePort.findEmailById(id);
+    }
 
 
 }

@@ -31,4 +31,6 @@ public interface IUserServicePort {
      * @return The phone number of the user.
      */
     String getPhoneById(String id);
+
+    String findEmailById(String id);
 }

@@ -1,5 +1,6 @@
 package com.pragma.usersmicroservice.infrastructure.input.rest;
 
+import com.pragma.usersmicroservice.application.dto.response.EmailByIdResponse;
 import com.pragma.usersmicroservice.application.dto.response.JwtResponse;
 import com.pragma.usersmicroservice.application.dto.response.PhoneByIdResponse;
 import com.pragma.usersmicroservice.application.dto.request.UserRegisterRequest;
@@ -80,6 +81,12 @@ public class UserRestController {
     @GetMapping("/phone")
     public ResponseEntity<PhoneByIdResponse> getPhoneByEmail(@RequestParam("id") String id) {
         PhoneByIdResponse response = userHandler.getPhoneById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/email/{id}")
+    public ResponseEntity<EmailByIdResponse> getEmailById(@PathVariable String id) {
+        EmailByIdResponse response = userHandler.getEmailById(id);
         return ResponseEntity.ok(response);
     }
 }

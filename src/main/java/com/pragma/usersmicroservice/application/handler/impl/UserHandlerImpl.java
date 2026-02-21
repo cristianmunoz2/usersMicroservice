@@ -1,5 +1,6 @@
 package com.pragma.usersmicroservice.application.handler.impl;
 
+import com.pragma.usersmicroservice.application.dto.response.EmailByIdResponse;
 import com.pragma.usersmicroservice.application.dto.response.JwtResponse;
 import com.pragma.usersmicroservice.application.dto.response.PhoneByIdResponse;
 import com.pragma.usersmicroservice.application.dto.request.UserRegisterRequest;
@@ -84,6 +85,13 @@ public class UserHandlerImpl implements IUserHandler {
     public PhoneByIdResponse getPhoneById(String email) {
         PhoneByIdResponse response = new PhoneByIdResponse();
         response.setPhoneNumber(userServicePort.getPhoneById(email));
+        return response;
+    }
+
+    @Override
+    public EmailByIdResponse getEmailById(String id) {
+        EmailByIdResponse response = new EmailByIdResponse();
+        response.setEmail(userServicePort.findEmailById(id));
         return response;
     }
 
