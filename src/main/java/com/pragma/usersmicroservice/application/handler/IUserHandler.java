@@ -51,4 +51,5 @@ public interface IUserHandler {
     EmailByIdResponse getEmailById(String id);
 
     boolean ownerExistsById(String id);
+    boolean employeeExistsById(String id);
 }

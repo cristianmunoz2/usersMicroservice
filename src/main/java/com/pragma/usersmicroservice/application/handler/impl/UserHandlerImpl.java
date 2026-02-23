@@ -101,4 +101,9 @@ public class UserHandlerImpl implements IUserHandler {
         return userServicePort.existsByIdAndRoleId(id, 1);
     }
 
+    @Override
+    public boolean employeeExistsById(String id) {
+        return userServicePort.existsByIdAndRoleId(id, 2);
+    }
+
 }
