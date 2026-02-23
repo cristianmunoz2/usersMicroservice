@@ -1,6 +1,7 @@
 package com.pragma.usersmicroservice.domain.api;
 
 import com.pragma.usersmicroservice.domain.model.User;
+import com.pragma.usersmicroservice.domain.util.RoleName;
 
 /**
  * Represents a User port.
@@ -33,4 +34,6 @@ public interface IUserServicePort {
     String getPhoneById(String id);
 
     String findEmailById(String id);
+
+    boolean existsByIdAndRoleId(String id, int roleId);
 }

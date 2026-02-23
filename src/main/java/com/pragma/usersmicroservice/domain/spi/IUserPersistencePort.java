@@ -1,6 +1,7 @@
 package com.pragma.usersmicroservice.domain.spi;
 
 import com.pragma.usersmicroservice.domain.model.User;
+import com.pragma.usersmicroservice.domain.util.RoleName;
 
 import java.util.Optional;
 
@@ -54,4 +55,6 @@ public interface IUserPersistencePort {
     Optional<User> findById(String id);
 
     String findEmailById(String id);
+
+    boolean existsByIdAndRole(String id, int roleId);
 }

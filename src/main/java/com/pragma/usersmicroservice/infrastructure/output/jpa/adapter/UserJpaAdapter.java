@@ -2,6 +2,7 @@ package com.pragma.usersmicroservice.infrastructure.output.jpa.adapter;
 
 import com.pragma.usersmicroservice.domain.model.User;
 import com.pragma.usersmicroservice.domain.spi.IUserPersistencePort;
+import com.pragma.usersmicroservice.domain.util.RoleName;
 import com.pragma.usersmicroservice.infrastructure.output.jpa.entity.UserEntity;
 import com.pragma.usersmicroservice.infrastructure.output.jpa.mapper.IUserEntityMapper;
 import com.pragma.usersmicroservice.infrastructure.output.jpa.repository.IUserRepository;
@@ -69,6 +70,11 @@ public class UserJpaAdapter implements IUserPersistencePort {
     @Override
     public String findEmailById(String id) {
         return userRepository.findEmailById(id);
+    }
+
+    @Override
+    public boolean existsByIdAndRole(String id, int roleId) {
+        return userRepository.existsByIdAndRoleId(id, roleId);
     }
 
     @Override

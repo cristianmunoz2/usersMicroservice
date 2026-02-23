@@ -49,4 +49,6 @@ public interface IUserHandler {
     PhoneByIdResponse getPhoneById(String id);
 
     EmailByIdResponse getEmailById(String id);
+
+    boolean ownerExistsById(String id);
 }

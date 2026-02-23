@@ -153,6 +153,11 @@ public class UserUseCase implements IUserServicePort {
         return userPersistencePort.findEmailById(id);
     }
 
+    @Override
+    public boolean existsByIdAndRoleId(String id, int roleId) {
+        return userPersistencePort.existsByIdAndRole(id, roleId);
+    }
+
 
 }
 
