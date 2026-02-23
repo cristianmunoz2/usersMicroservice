@@ -117,4 +117,12 @@ public class UserRestController {
         EmailByIdResponse response = userHandler.getEmailById(id);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Check owner existence", description = "Check if an Owner with a given Id exists")
+    @ApiResponse(responseCode = "200", description = "Owner existence status returned")
+    @GetMapping("/ownerExists/{id}")
+    public ResponseEntity<Boolean> existsByOwnerId(@PathVariable String id) {
+        boolean exists = userHandler.existsById(id);
+        return ResponseEntity.ok(exists);
+    }
 }
