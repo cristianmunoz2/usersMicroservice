@@ -9,6 +9,7 @@ import com.pragma.usersmicroservice.application.mapper.IUserRegisterRequestMappe
 import com.pragma.usersmicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersmicroservice.domain.api.IUserServicePort;
 import com.pragma.usersmicroservice.domain.model.User;
+import com.pragma.usersmicroservice.domain.util.RoleName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +94,11 @@ public class UserHandlerImpl implements IUserHandler {
         EmailByIdResponse response = new EmailByIdResponse();
         response.setEmail(userServicePort.findEmailById(id));
         return response;
+    }
+
+    @Override
+    public boolean ownerExistsById(String id) {
+        return userServicePort.existsByIdAndRoleId(id, 1);
     }
 
 }

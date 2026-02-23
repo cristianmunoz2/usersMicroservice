@@ -121,8 +121,9 @@ public class UserRestController {
     @Operation(summary = "Check owner existence", description = "Check if an Owner with a given Id exists")
     @ApiResponse(responseCode = "200", description = "Owner existence status returned")
     @GetMapping("/ownerExists/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Boolean> existsByOwnerId(@PathVariable String id) {
-        boolean exists = userHandler.existsById(id);
+        boolean exists = userHandler.ownerExistsById(id);
         return ResponseEntity.ok(exists);
     }
 }
