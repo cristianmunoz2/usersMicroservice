@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
 
     @Override
     public void eraseCredentials() {
-
+        //Not implemented yet
     }
 
     //Spring interprets role as "ROLE_ROLENAME", so we need to concatenate
