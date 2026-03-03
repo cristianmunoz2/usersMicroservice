@@ -9,7 +9,6 @@ import com.pragma.usersmicroservice.application.mapper.IUserRegisterRequestMappe
 import com.pragma.usersmicroservice.domain.api.IAuthServicePort;
 import com.pragma.usersmicroservice.domain.api.IUserServicePort;
 import com.pragma.usersmicroservice.domain.model.User;
-import com.pragma.usersmicroservice.domain.util.RoleName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

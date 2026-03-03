@@ -12,8 +12,6 @@ import com.pragma.usersmicroservice.domain.spi.IUserPersistencePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Optional;
-
 /**
  * Use case for handling user authentication.
  */
@@ -24,6 +22,8 @@ public class AuthenticationUseCase implements IAuthServicePort {
     private final IJwtProviderPort jwtProviderPort;
     private final IUserPersistencePort userPersistencePort;
     private final IRolePersistencePort rolePersistencePort;
+
+    private static final String INVALID_CREDENTIALS = "Invalid credentials";
 
     /**
      * Authenticates a user and generates a JWT token if the credentials are valid.
@@ -36,14 +36,14 @@ public class AuthenticationUseCase implements IAuthServicePort {
     @Override
     public String login(String email, String password) {
         User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException(INVALID_CREDENTIALS));
 
         if (!passwordEncryptionPort.matches(password, user.getPassword())) {
-            throw new InvalidCredentialsException("Invalid credentials");
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS);
         }
 
         Role role = rolePersistencePort.findById(Long.parseLong(user.getRole().getId()))
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException(INVALID_CREDENTIALS));
 
         User authenticatedUser = User.builder()
                 .id(user.getId())
@@ -63,25 +63,25 @@ public class AuthenticationUseCase implements IAuthServicePort {
     @Override
     public UserValidationResponse validateNewToken(String token) {
         if (!jwtProviderPort.validateToken(token)) {
-            throw new InvalidCredentialsException("Invalid credentials");
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS);
         }
 
         String email = jwtProviderPort.getEmailFromToken(token);
         User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException(INVALID_CREDENTIALS));
 
         Role role = rolePersistencePort.findById(Long.parseLong(user.getRole().getId()))
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException(INVALID_CREDENTIALS));
 
         String tokenRole = jwtProviderPort.getRoleFromToken(token);
         if (!role.getName().toString().equals(tokenRole)) {
-            throw new InvalidCredentialsException("Invalid credentials");
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS);
         }
 
         return UserValidationResponse.builder()
-                .id(user.getId())
-                .role(role.getName().toString())
-                .email(user.getEmail())
+                .userId(user.getId())
+                .userRole(role.getName().toString())
+                .userEmail(user.getEmail())
                 .build();
     }
 }
